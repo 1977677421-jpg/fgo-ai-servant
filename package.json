@@ -1,0 +1,6 @@
+{
+  "name":"fgo-ai-servant",
+  "version":"1.0.0",
+  "main":"api/draw.js",
+  "dependencies":{"openai":"^4.25.0"}
+}

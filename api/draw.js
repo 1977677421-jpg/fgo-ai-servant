@@ -1,11 +1,8 @@
-import fetch from "node-fetch";
-
 export default async function handler(req, res) {
   try {
     const apiKey = process.env.DEESEEK_API_KEY;
     if (!apiKey) throw new Error("DeepSeek API Key 未设置");
 
-    // 随机稀有度抽取
     const rarityTable = [
       { min:1,max:25,rarity:"★★★★★ SSR" },
       { min:26,max:55,rarity:"★★★★ SR" },
@@ -35,6 +32,30 @@ export default async function handler(req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({ prompt, temperature:0.8 })
+    });
+
+    // 先获取文本
+    const text = await response.text();
+
+    // 尝试解析 JSON
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch(err) {
+      // 如果不是 JSON，直接返回文本
+      return res.status(500).json({ error: "DeepSeek返回非JSON", raw: text });
+    }
+
+    res.status(200).json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "生成失败", message: err.message });
+  }
+}        "Content-Type": "application/json",
         "Authorization": `Bearer ${apiKey}`
       },
       body: JSON.stringify({

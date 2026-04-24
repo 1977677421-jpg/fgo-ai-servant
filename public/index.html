@@ -6,22 +6,48 @@
 <style>
 body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
 button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
-pre { background: #fff; padding: 15px; border-radius: 5px; margin-top: 20px; overflow-x: auto; }
+pre { background: #fff; padding: 15px; border-radius: 5px; margin-top: 20px; overflow-x: auto; white-space: pre-wrap; }
+#history { margin-top: 20px; }
+.rarity-★★★★★ { color: gold; }
+.rarity-★★★★ { color: deepskyblue; }
+.rarity-★★★ { color: limegreen; }
+.rarity-★★ { color: orange; }
+.rarity-★ { color: gray; }
 </style>
 </head>
 <body>
 <h1>终极抽取式历史英灵生成器（DeepSeek版）</h1>
 <button onclick="draw()">抽取历史英灵</button>
 <pre id="result"></pre>
+<div id="history"><h2>历史记录</h2></div>
 
 <script>
 async function draw(){
   const resultEl = document.getElementById('result');
+  const historyEl = document.getElementById('history');
   resultEl.textContent = "生成中...";
   try{
     const res = await fetch('/api/draw.js', { method:'POST' });
     const data = await res.json();
-    resultEl.textContent = JSON.stringify(data,null,2);
+    if(data.error){
+      resultEl.textContent = "生成失败: " + data.error + "\n详细信息:\n" + data.raw;
+      return;
+    }
+
+    const displayText = JSON.stringify(data,null,2);
+    resultEl.textContent = displayText;
+
+    const rarityMatch = displayText.match(/稀有度.*?([★]{1,5})/);
+    if(rarityMatch){
+      const rarity = rarityMatch[1];
+      const colorSpan = `<span class="rarity-${rarity}">${rarity}</span>`;
+      resultEl.innerHTML = displayText.replace(rarity, colorSpan);
+    }
+
+    const div = document.createElement('div');
+    div.innerHTML = displayText.replace(/\n/g,'<br>');
+    historyEl.appendChild(div);
+
   }catch(e){
     resultEl.textContent = "生成失败: "+e;
   }

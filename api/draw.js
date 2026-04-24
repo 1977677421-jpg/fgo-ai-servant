@@ -30,11 +30,33 @@ export default async function handler(req, res) {
 - 团队角色和战术定位
 `;
 
-    // 调用 DeepSeek API
     const response = await fetch("https://api.deepseek.com/v1/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({ prompt, temperature: 0.8 })
+    });
+
+    const text = await response.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (err) {
+      return res.status(500).json({
+        error: "DeepSeek返回非JSON",
+        raw: text
+      });
+    }
+
+    res.status(200).json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "生成失败", message: err.message });
+  }
+}        "Content-Type": "application/json",
         "Authorization": `Bearer ${apiKey}`
       },
       body: JSON.stringify({ prompt, temperature: 0.8 })

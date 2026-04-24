@@ -1,13 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>终极抽取式历史英灵生成器</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+pre { background: #fff; padding: 15px; border-radius: 5px; margin-top: 20px; overflow-x: auto; }
+</style>
+</head>
+<body>
+<h1>终极抽取式历史英灵生成器（DeepSeek版）</h1>
 <button onclick="draw()">抽取历史英灵</button>
 <pre id="result"></pre>
+
 <script>
 async function draw(){
-  document.getElementById('result').textContent="生成中...";
-  const res = await fetch('/api/draw.js',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'}
-  });
-  const data = await res.json();
-  document.getElementById('result').textContent=JSON.stringify(data,null,2);
+  const resultEl = document.getElementById('result');
+  resultEl.textContent = "生成中...";
+  try{
+    const res = await fetch('/api/draw.js', { method:'POST' });
+    const data = await res.json();
+    resultEl.textContent = JSON.stringify(data,null,2);
+  }catch(e){
+    resultEl.textContent = "生成失败: "+e;
+  }
 }
 </script>
+</body>
+</html>

@@ -1,11 +1,11 @@
 {
-  "version":2,
-  "builds":[
-    {"src":"api/draw.js","use":"@vercel/node"},
-    {"src":"public/index.html","use":"@vercel/static"}
+  "version": 2,
+  "builds": [
+    { "src": "api/draw.js", "use": "@vercel/node" },
+    { "src": "public/index.html", "use": "@vercel/static" }
   ],
-  "routes":[
-    {"src":"/api/(.*)","dest":"/api/draw.js"},
-    {"src":"/(.*)","dest":"/public/index.html"}
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/draw.js" },
+    { "src": "/(.*)", "dest": "/public/index.html" }
   ]
 }

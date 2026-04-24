@@ -1,3 +1,5 @@
+import fetch from "node-fetch";
+
 export default async function handler(req, res) {
   try {
     const apiKey = process.env.DEESEEK_API_KEY;
@@ -28,13 +30,38 @@ export default async function handler(req, res) {
 - 团队角色和战术定位
 `;
 
+    // 调用 DeepSeek API
     const response = await fetch("https://api.deepseek.com/v1/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${apiKey}`
       },
-      body: JSON.stringify({ prompt, temperature:0.8 })
+      body: JSON.stringify({ prompt, temperature: 0.8 })
+    });
+
+    // 先读取文本
+    const text = await response.text();
+
+    // 尝试解析 JSON
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch(err) {
+      // 返回原始文本给前端显示，方便排查
+      return res.status(500).json({
+        error: "DeepSeek返回非JSON",
+        raw: text
+      });
+    }
+
+    res.status(200).json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "生成失败", message: err.message });
+  }
+}      body: JSON.stringify({ prompt, temperature:0.8 })
     });
 
     // 先获取文本

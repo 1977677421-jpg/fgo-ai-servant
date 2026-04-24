@@ -1,0 +1,13 @@
+<button onclick="draw()">抽取历史英灵</button>
+<pre id="result"></pre>
+<script>
+async function draw(){
+  document.getElementById('result').textContent="生成中...";
+  const res = await fetch('/api/draw.js',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'}
+  });
+  const data = await res.json();
+  document.getElementById('result').textContent=JSON.stringify(data,null,2);
+}
+</script>
